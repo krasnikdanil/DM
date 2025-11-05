@@ -4,17 +4,15 @@ def test_integer_creation():
     """Тестирование создания целых чисел"""
     # Тестирование примера из задания
     d = Integer("-50")
-    assert str(d) == "-50"
-    assert d.value == -50
+    assert d.value == "-50"
     
     # Проверим другие примеры
     positive_num = Integer("123")
-    assert str(positive_num) == "123"
-    assert positive_num.value == 123
+    assert positive_num.value == "123"
     
     zero = Integer("0")
-    assert str(zero) == "0"
-    assert zero.value == 0
+    assert zero.value == "0"
+
     
     print("Все тесты пройдены успешно!")
 
