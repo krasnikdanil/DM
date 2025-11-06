@@ -1,4 +1,7 @@
 from src.integer.integer import Integer
+from src.natural.natural import Natural
 
-class Trans_n_z(Integer):
-    pass
+""" Натуральное число преобразуем в целое"""
+class Transnz(Natural):
+    def trans_n_z(self):
+        return Integer(self.value)

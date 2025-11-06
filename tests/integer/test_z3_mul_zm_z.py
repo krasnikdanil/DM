@@ -1,4 +1,3 @@
-from src.integer import Integer
 from src.integer.z3_mul_zm_z import Mulzmz
 
 def test_multiply_positive_integer_by_minus_one():
