@@ -1,7 +1,7 @@
 from src.natural.natural import Natural
 
-class Add1n(Natural):
-    #Класс для добавления 1 к натуральному числу
-    def add_1n(self) -> 'Natural':
+#Добавляем 1 к натуральному числу
+class Add1nn(Natural):
+    def add_1n_n(self) -> 'Natural':
         result_value = str(int(self.value) + 1)
-        return Natural(result_value)
+        return result_value
