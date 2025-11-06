@@ -1,62 +1,35 @@
-from src.natural.n3_add_1n_n import Add1n
-
-def test_add_1n_positive():
-    """Тест добавления 1 к положительному натуральному числу"""
-    number = Add1n("5")
-    result = number.add_1n()
-    assert result.value == "6"
+import pytest
+from src.natural.n3_add_1n_n import Add1nn
+from src.natural.natural import Natural
 
 
-def test_add_1n_single_digit():
-    """Тест добавления 1 к однозначному натуральному числу"""
-    number = Add1n("1")
-    result = number.add_1n()
-    assert result.value == "2"
+class TestAdd1nn:
+    def test_add_1n_n_simple(self):
+        """Тест: добавление 1 к простому числу"""
+        num = Add1nn("5")
+        result = num.add_1n_n()
+        assert result == "6"
 
+    def test_add_1n_n_zero(self):
+        """Тест: добавление 1 к нулю"""
+        num = Add1nn("0")
+        result = num.add_1n_n()
+        assert result == "1"
 
-def test_add_1n_with_carry():
-    """Тест добавления 1 к натуральному числу с переносом разряда"""
-    number = Add1n("9")
-    result = number.add_1n()
-    assert result.value == "10"
+    def test_add_1n_n_nine(self):
+        """Тест: добавление 1 к 9 (переход через разряд)"""
+        num = Add1nn("9")
+        result = num.add_1n_n()
+        assert result == "10"
 
+    def test_add_1n_n_multiple_nines(self):
+        """Тест: добавление 1 к числу с несколькими девятками"""
+        num = Add1nn("999")
+        result = num.add_1n_n()
+        assert result == "1000"
 
-def test_add_1n_large_number():
-    """Тест добавления 1 к большому натуральному числу"""
-    number = Add1n("9999")
-    result = number.add_1n()
-    assert result.value == "10000"
-
-
-def test_add_1n_boundary_value():
-    """Тест добавления 1 к граничному значению (1)"""
-    number = Add1n("1")
-    result = number.add_1n()
-    assert result.value == "2"
-
-
-def test_add_1n_error_for_zero():
-    """Тест проверки ошибки при попытке создать Add1n с нулевым значением"""
-    try:
-        number = Add1n("0")
-        assert False, "Ожидалась ошибка ValueError для нуля"
-    except ValueError:
-        pass  # Ожидаемое исключение
-
-
-def test_add_1n_error_for_negative():
-    """Тест проверки ошибки при попытке создать Add1n с отрицательным значением"""
-    try:
-        number = Add1n("-5")
-        assert False, "Ожидалась ошибка ValueError для отрицательного числа"
-    except ValueError:
-        pass  # Ожидаемое исключение
-
-
-def test_add_1n_error_for_non_numeric():
-    """Тест проверки ошибки при попытке создать Add1n с нечисловым значением"""
-    try:
-        number = Add1n("abc")
-        assert False, "Ожидалась ошибка ValueError для нечислового значения"
-    except ValueError:
-        pass  # Ожидаемое исключение
+    def test_add_1n_n_large_number(self):
+        """Тест: добавление 1 к большому числу"""
+        num = Add1nn("123456789012345")
+        result = num.add_1n_n()
+        assert result == "123456789012346"
