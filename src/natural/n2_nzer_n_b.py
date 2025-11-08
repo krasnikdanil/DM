@@ -8,5 +8,3 @@ class NaturalZeroCheck(Natural):
         """Проверка на ноль: если число не равно нулю, то 'да' иначе 'нет'"""
         if int(self.value) != 0:
             return "да"
-        else:
-            return "нет"
