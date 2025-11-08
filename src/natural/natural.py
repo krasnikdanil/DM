@@ -372,13 +372,3 @@ class Natural:
         
         # Возвращаем результат деления
         return product // greatest_common_divisor
-
-
-def main():
-    a, b = input(), input()
-    d = Natural(a)
-    f = Natural(b)
-    print(d % f)
-
-if __name__ == "__main__":
-    main()
