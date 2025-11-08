@@ -1,20 +1,23 @@
 class Integer:
-    """Класс для целых чисел"""
-    value: str
+    value: int
 
-    def parsing_integer(self, value: str):
+    def parsing_int(self, value: int):
+       # Парсит строку и устанавливает значение целого числа
         if len(value) == 0:
             raise ValueError("Нужно ввести целое число")
-
-        try:
-            parsed = int(value)
-        except ValueError:
+        if value[0] == '-':
+            if value[1:].isdigit():
+                self.value = -int(value[1:]) # сохраняем отрицательное значение
+            else:
+                raise ValueError("Нужно ввести целое число")
+        elif value.isdigit():
+            self.value = int(value)
+        else:
             raise ValueError("Нужно ввести целое число")
 
-        self.value = str(parsed)
+    def __str__(self):
+        """Возвращает строковое представление целого числа"""
+        return f"{self.value}"
 
     def __init__(self, value: str = "0"):
-        self.parsing_integer(value)
-
-    def __str__(self):
-        return self.value
+        self.parsing_int(value)
