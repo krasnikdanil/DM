@@ -13,19 +13,19 @@ class Natural:
         self.values = self.parsing_numbern(value)
     
     """ Вывод Natural """
-    def __str__(self):
+    def __str__(self) -> str:
         return "".join(map(str, self.values))[::-1]
     
     ''' Сравнение на Natural на ==  '''
-    def __eq__(self, other):
+    def __eq__(self, other: Natural) -> bool:
         if not isinstance(other, Natural):
             return NotImplemented
         return self.values == other.values
     ''' Сравнение на Natural на !=  '''
-    def __ne__(self, other):
+    def __ne__(self, other: Natural) -> bool:
         return not self == other
     ''' Сравнение на Natural на <  '''
-    def __lt__(self, other):
+    def __lt__(self, other: Natural) -> bool:
         if not isinstance(other, Natural):
             return NotImplemented
         len1 = len(self.values)
@@ -38,7 +38,7 @@ class Natural:
                 return self.values[i] < other.values[i]
         return False
     ''' Сравнение на Natural на >  '''
-    def __gt__(self, other):
+    def __gt__(self, other: Natural) -> bool:
         if not isinstance(other, Natural):
             return NotImplemented
         len1 = len(self.values)
@@ -51,10 +51,10 @@ class Natural:
                 return self.values[i] > other.values[i]
         return False
     ''' Сравнение на Natural на <=  '''
-    def __le__(self, other):
+    def __le__(self, other: Natural) -> bool:
         return self < other or self == other
     ''' Сравнение на Natural на >=  '''
-    def __ge__(self, other):
+    def __ge__(self, other) -> bool:
         return self > other or self == other
 
     """ Унарный + для Natural """
@@ -62,10 +62,11 @@ class Natural:
         return self
 
     @staticmethod
-    def _format(lnumber: list[int]):
+    def _format(lnumber: list[int]) -> Natural:
         result = Natural()
         result.values = lnumber
         return result
+    
     """ Сложение Natural с Natural """
     def __add__(self, other: Natural) -> Natural:
         if not isinstance(other, Natural):
@@ -85,6 +86,7 @@ class Natural:
         if remnant != 0:
             result.append(remnant)
         return Natural._format(result)
+    
     """ Вычитание Natural из Natural """
     def __sub__(self, other: Natural) -> Natural:
         if not isinstance(other, Natural):
@@ -111,9 +113,10 @@ class Natural:
         # Удаление лидирующих нулей
         # (например, 105 - 102 = 003 -> 3)
         while len(result_digits) > 1 and result_digits[-1] == 0:
-            result_digits.pop()
-            
+            result_digits.pop()        
         return Natural._format(result_digits)
+    
+    """ Деление Natural из Natural """
     def __mul__(self, other: Natural) -> Natural:
         if not isinstance(other, Natural):
             raise ValueError("Умножение поддерживается только для натуральных чисел")
@@ -137,18 +140,15 @@ class Natural:
             
             if carry > 0:
                 current_res_digits.append(carry)
-            
             # Сдвиг результата
             # Умножение на 10, 100, 1000 и т.д.
             # эквивалентно добавлению нулей в начало перевернутого списка
             shifted_digits = [0] * i + current_res_digits
-            
             # Создаем Natural из промежуточного результата
             current_res_natural = Natural._format(shifted_digits)
             
             # Суммируем с общим результатом
             total_res += current_res_natural
-            
         return total_res
 
     """ Деление Natural на Natural """
@@ -196,7 +196,7 @@ class Natural:
                 
         return res
              
-    def __mod__(self, other: "Natural") -> "Natural":
+    def __mod__(self, other: Natural) -> Natural:
         if not isinstance(other, Natural):
             raise ValueError("Деление поддерживается только для натуральных чисел")
         if other.values == [0]:
@@ -235,7 +235,7 @@ class Natural:
     """ Сравнение натуральных чисел: 
     2 - если первое больше второго,
     0, если равно, 1 иначе. """
-    def comnn(self, other) -> str:
+    def comnn(self, other: Natural) -> str:
         if self > other:
             return "2"
         if self == other:
@@ -253,12 +253,12 @@ class Natural:
     
     """ Вычитание из первого большего натурального числа
     второго меньшего или равного """
-    def subnn(self, other) -> Natural:
+    def subnn(self, other: Natural) -> Natural:
         result = self - other if self > other else other - self
         return Natural._format(result)
 
     """ Умножение натурального числа на цифру """
-    def mulnd(self, other) -> Natural:
+    def mulnd(self, other: Natural) -> Natural:
         return Natural._format(self * other)
 
     """ Умножение натурального числа на 10^k """
@@ -281,7 +281,7 @@ class Natural:
         return result
 
     """ Вычитание из натурального другого натурального, умноженного на цифру """
-    def sub_mul_digit(self, other, digit: int) -> Natural:
+    def sub_mul_digit(self, other: Natural, digit: int) -> Natural:
         if not 0 <= digit <= 9:
             raise ValueError("'digit' должен быть от 0 до 9")
         
@@ -295,7 +295,7 @@ class Natural:
 
         """ Вычисляет первую цифру деления (self / other) и её позицию k.
         Возвращает кортеж (цифра, k). """
-    def div_first_digit(self, other: "Natural") -> tuple[int, int]:
+    def div_first_digit(self, other: Natural) -> tuple[int, int]:
         if not isinstance(other, Natural) or other.values == [0]:
             raise ValueError("Делитель должен быть натуральным числом, не равным нулю.")
 
@@ -356,7 +356,7 @@ class Natural:
 
     """ Вычисление НОК (Наименьшего Общего Кратного).
     НОК(a, b) = (a * b) / НОД(a, b) """
-    def lcm(self, other: "Natural") -> "Natural":
+    def lcm(self, other: Natural) -> Natural:
         if not isinstance(other, Natural):
             raise ValueError("Аргумент должен быть натуральным числом.")
 
