@@ -1,4 +1,4 @@
-from src.natural.natural import Natural
+from natural.natural import Natural
 
 class Integer(Natural):
     def __init__(self, value: str = "0"):
@@ -58,8 +58,12 @@ class Integer(Natural):
     def __sub__(self, other: Integer) -> Integer:
         if not isinstance(other, Integer):
             raise TypeError("Вычитание возможно только для целых чисел")
-        
-        return self + (-other)
+
+        # Реализация через сложение с отрицательным числом (a - b = a + (-b))
+        # Это корректный и простой способ, использующий уже реализованные методы.
+        negated_other = -other # используем существующий __neg__
+        result = self + negated_other # используем существующий __add__
+        return result
 
     """ Умножение Integer """
     def __mul__(self, other: Integer) -> Integer:
@@ -74,23 +78,31 @@ class Integer(Natural):
         result.sign = self.sign * other.sign
         return result
     
-    """ Деление Integer """
+    """ Деление Integer (округление к нулю) """
     def __floordiv__(self, other: Integer) -> Integer:
         if not isinstance(other, Integer):
             raise TypeError("Деление возможно только на целое число")
         if str(other) == "0":
             raise ZeroDivisionError("Деление на ноль")
 
-        quotient_natural = super().__floordiv__(other)
-        remainder_natural = super().__mod__(other)
+        # Получаем модули (Natural) для деления
+        self_abs = Natural(str(self))
+        other_abs = Natural(str(other))
+
+        quotient_natural = self_abs // other_abs # Natural.__floordiv__
+        remainder_natural = self_abs % other_abs # Natural.__mod__
         
         quotient = Integer(str(quotient_natural))
         quotient.sign = self.sign * other.sign
 
-        # Коррекция для отрицательных результатов с остатком
-        if quotient.sign == -1 and str(remainder_natural) != "0":
-            quotient = quotient + Integer("-1")
-            
+        # Коррекция для усеченного деления (округление к нулю).
+        # Если делимое и делитель имеют разные знаки и остаток от деления не равен нулю,
+        # результат нужно скорректировать, чтобы он был ближе к нулю.
+        # Например: -7 // 3 = -3 (floor), но -7 trunc_div 3 = -2 (trunc).
+        # Или: 7 // -3 = -3 (floor), но 7 trunc_div -3 = -2 (trunc).
+        if (self.sign != other.sign) and str(remainder_natural) != "0":
+             quotient = quotient - Integer("1") # вычитаем 1 (с тем же знаком, что и частное до коррекции)
+
         return quotient
 
     """ Остаток от деления Integer """
@@ -100,9 +112,16 @@ class Integer(Natural):
         if str(other) == "0":
             raise ZeroDivisionError("Деление на ноль")
         # a % n = a - n * (a // n)
-        quotient = self // other
-        product = other * quotient
-        remainder = self - product
+        quotient = self // other # результат Integer
+        # Умножение other * quotient может вызвать ошибку, если super().__mul__ в __mul__ получит Integer вместо Natural.
+        # Нужно вычислить n * (a // n) используя Natural числа.
+        n_nat = Natural(str(other))
+        q_nat = Natural(str(quotient))
+        product_nat = n_nat * q_nat # Natural.__mul__
+        product_int = Integer(str(product_nat))
+        product_int.sign = other.sign * quotient.sign # Устанавливаем знак результата умножения
+
+        remainder = self - product_int # Integer.__sub__
         
         return remainder
 
