@@ -255,12 +255,8 @@ class Natural:
     второго меньшего или равного """
     def subnn(self, other: Natural) -> Natural:
         result = self - other if self > other else other - self
-        return Natural._format(result)
-
-    """ Умножение натурального числа на цифру """
-    def mulnd(self, other: Natural) -> Natural:
-        return Natural._format(self * other)
-
+        return result
+        
     """ Умножение натурального числа на 10^k """
     def mul_10k(self, k: int) -> Natural:
         if k < 0:
