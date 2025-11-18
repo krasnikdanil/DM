@@ -16,12 +16,18 @@ class Integer(Natural):
                 super().__init__(value)
 
     def __str__(self):
-        if self.sign == -1 and (len(self.values) > 1 or self.values[0] != 0):
+        if self.sign == -1 and not self.is_zero():
             return "-" + super().__str__()
         return super().__str__()
 
+    def is_zero(self) -> bool:
+        return len(self.values) == 1 and self.values[0] == 0
+    
+    def is_negative(self) -> bool:
+        return self.sign == -1 and not self.is_zero()
+
     def __neg__(self):
-        if str(self) == "0":
+        if self.is_zero():
             return self
         
         negated_int = Integer(str(self))
@@ -40,16 +46,19 @@ class Integer(Natural):
             return result
         # Если знаки разные
         else:
-            # Сравниваем по модулю
-            if super().__gt__(other): # self > other
-                result_natural = super().__sub__(other)
+            # Результат зависит от того, какой модуль больше
+            abs_self = abs(self)  # Natural
+            abs_other = abs(other) # Natural
+
+            if abs_self > abs_other: # |self| > |other|
+                result_natural = abs_self.__sub__(abs_other) # Natural.__sub__
                 result = Integer(str(result_natural))
-                result.sign = self.sign
-            elif super().__lt__(other): # self < other
-                result_natural = other.__sub__(self)
+                result.sign = self.sign # Знак результата как у self
+            elif abs_self < abs_other: # |self| < |other|
+                result_natural = abs_other.__sub__(abs_self) # Natural.__sub__
                 result = Integer(str(result_natural))
-                result.sign = other.sign
-            else: # self == other
+                result.sign = other.sign # Знак результата как у other
+            else: # |self| == |other|
                 result = Integer("0")
             
             return result
@@ -86,8 +95,8 @@ class Integer(Natural):
             raise ZeroDivisionError("Деление на ноль")
 
         # Получаем модули (Natural) для деления
-        self_abs = Natural(str(self))
-        other_abs = Natural(str(other))
+        self_abs = Natural(str(abs(self)))
+        other_abs = Natural(str(abs(other)))
 
         quotient_natural = self_abs // other_abs # Natural.__floordiv__
         remainder_natural = self_abs % other_abs # Natural.__mod__
@@ -153,7 +162,7 @@ class Integer(Natural):
     """ Преобразует целое неотрицательное число в натуральное.
         Вызывает ValueError, если число отрицательное. """
     def to_natural(self) -> Natural:
-        if self.sign == -1 and str(self) != "0":
+        if self.is_negative():
             raise ValueError("Нельзя преобразовать отрицательное число в натуральное")
         return Natural(str(self))
 

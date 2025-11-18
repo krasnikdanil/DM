@@ -31,6 +31,14 @@ from ui_desktop.flet.views.integer.methods.subtraction import IntegerSubtraction
 from ui_desktop.flet.views.integer.methods.multiplication import IntegerMultiplicationView
 from ui_desktop.flet.views.integer.methods.truncated_division import IntegerTruncatedDivisionView
 from ui_desktop.flet.views.integer.methods.modulo import IntegerModuloView
+from ui_desktop.flet.views.rational.methods.reduction import RationalReductionView
+from ui_desktop.flet.views.rational.methods.addition import RationalAdditionView
+from ui_desktop.flet.views.rational.methods.subtraction import RationalSubtractionView
+from ui_desktop.flet.views.rational.methods.multiplication import RationalMultiplicationView
+from ui_desktop.flet.views.rational.methods.division import RationalDivisionView
+from ui_desktop.flet.views.rational.methods.is_integer import RationalIsIntegerView
+from ui_desktop.flet.views.rational.methods.trans_z_q import RationalTransZQView
+from ui_desktop.flet.views.rational.methods.trans_q_z import RationalTransQZView
 
 
 # Словарь соответствия маршрутов и представлений
@@ -63,6 +71,14 @@ ROUTE_MAP = {
     "/integer/multiplication": lambda: IntegerMultiplicationView(),
     "/integer/truncated_division": lambda: IntegerTruncatedDivisionView(),
     "/integer/modulo": lambda: IntegerModuloView(),
+    "/rational/reduction": lambda: RationalReductionView(),
+    "/rational/addition": lambda: RationalAdditionView(),
+    "/rational/subtraction": lambda: RationalSubtractionView(),
+    "/rational/multiplication": lambda: RationalMultiplicationView(),
+    "/rational/division": lambda: RationalDivisionView(),
+    "/rational/is_integer": lambda: RationalIsIntegerView(),
+    "/rational/trans_z_q": lambda: RationalTransZQView(),
+    "/rational/trans_q_z": lambda: RationalTransQZView(),
 }
 
 def handle_route_change(e: ft.RouteChangeEvent, page: ft.Page):
@@ -118,8 +134,8 @@ def get_theme_button(page: ft.Page) -> ft.IconButton:
     )
 
 
-def handle_view_pop(page: ft.Page):
+def handle_view_pop(e: ft.ViewPopEvent):
     """Обрабатывает возврат назад по стеку представлений"""
-    page.views.pop()
-    top_view = page.views[-1]
-    page.go(top_view.route)
+    e.page.views.pop()
+    top_view = e.page.views[-1]
+    e.page.go(top_view.route)

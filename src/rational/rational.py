@@ -1,5 +1,5 @@
-from src.natural.natural import Natural
-from src.integer.integer import Integer
+from natural.natural import Natural
+from integer.integer import Integer
 
 
 class Rational:
@@ -52,46 +52,23 @@ class Rational:
         """
         Q-1: RED_Q_Q
         Сокращение дроби до несократимого вида.
-
-        - Переносит знак в числитель (den > 0).
-        - Делит num и den на НОД(|num|, den).
-        - 0 представляется как 0/1.
         """
-        num_int = int(str(self.num))
-        den_int = int(str(self.den))
-
-        if den_int == 0:
-            raise ZeroDivisionError("Знаменатель рационального числа не может быть 0")
-
-        # 0/x -> 0/1
-        if num_int == 0:
+        # Если числитель 0, возвращаем 0/1
+        if self.num.is_zero():
             return Rational("0", "1")
 
-        # |num| и den как Natural
-        abs_num_nat = abs(Integer(str(self.num)))          # Natural
-        den_nat = Natural(str(self.den))
+        # Находим НОД числителя и знаменателя
+        # abs(self.num) вернет Natural
+        common_divisor = abs(self.num).gcd(self.den)
 
-        # НОД через Natural.gcd
-        gcd_nat = abs_num_nat.gcd(den_nat)
-        gcd_int = int(str(gcd_nat))
+        # Сокращаем числитель и знаменатель
+        new_num = self.num // Integer(str(common_divisor))
+        new_den = self.den // common_divisor
 
-        if gcd_int <= 0:
-            gcd_int = 1
-
-        # Делим на НОД (через int; допускается, т.к. это поверх ваших N/Z)
-        new_num_int = num_int // gcd_int
-        new_den_int = den_int // gcd_int
-
-        # Нормализуем знак: знаменатель > 0, знак только в числителе
-        if new_den_int < 0:
-            new_den_int = -new_den_int
-            new_num_int = -new_num_int
-
-        # Защита от -0
-        if new_num_int == 0:
-            return Rational("0", "1")
-
-        return Rational(str(new_num_int), str(new_den_int))
+        res = Rational()
+        res.num = new_num
+        res.den = new_den
+        return res
 
     # ================== Q-2: INT_Q_B ==================
 
@@ -134,133 +111,101 @@ class Rational:
     def add_qq_q(self, other: "Rational") -> "Rational":
         """
         Q-5: ADD_QQ_Q
-        Сложение двух рациональных чисел:
-          (a/b) + (c/d) = (a*(L/b) + c*(L/d)) / L,
-        где L = НОК(b, d).
-        Результат сокращается через RED_Q_Q.
+        Сложение двух рациональных чисел.
         """
         if not isinstance(other, Rational):
             raise TypeError("Складывать можно только с Rational")
 
-        r1 = self.red_q_q()
-        r2 = other.red_q_q()
+        # Общий знаменатель - НОК
+        common_den = self.den.lcm(other.den)
 
-        a = int(str(r1.num))
-        b = int(str(r1.den))
-        c = int(str(r2.num))
-        d = int(str(r2.den))
+        # Дополнительные множители
+        k1 = common_den // self.den
+        k2 = common_den // other.den
 
-        if b == 0 or d == 0:
-            raise ZeroDivisionError("Знаменатель рационального числа не может быть 0")
+        # Новый числитель
+        new_num = self.num * Integer(str(k1)) + other.num * Integer(str(k2))
 
-        # НОК знаменателей через Natural.lcm
-        L = int(str(Natural(str(b)).lcm(Natural(str(d)))))
-
-        k1 = L // b
-        k2 = L // d
-
-        num = a * k1 + c * k2
-        den = L
-
-        return Rational(str(num), str(den)).red_q_q()
+        # Создаем результат и сокращаем
+        result = Rational()
+        result.num = new_num
+        result.den = common_den
+        return result.red_q_q()
 
     # ================== Q-6: SUB_QQ_Q ==================
 
     def sub_qq_q(self, other: "Rational") -> "Rational":
         """
         Q-6: SUB_QQ_Q
-        Вычитание рациональных:
-          (a/b) - (c/d) = (a*(L/b) - c*(L/d)) / L,
-        где L = НОК(b, d).
-        Результат сокращается через RED_Q_Q.
+        Вычитание рациональных чисел.
         """
         if not isinstance(other, Rational):
             raise TypeError("Вычитать можно только Rational")
 
-        r1 = self.red_q_q()
-        r2 = other.red_q_q()
+        # Общий знаменатель - НОК
+        common_den = self.den.lcm(other.den)
 
-        a = int(str(r1.num))
-        b = int(str(r1.den))
-        c = int(str(r2.num))
-        d = int(str(r2.den))
+        # Дополнительные множители
+        k1 = common_den // self.den
+        k2 = common_den // other.den
 
-        if b == 0 or d == 0:
-            raise ZeroDivisionError("Знаменатель рационального числа не может быть 0")
+        # Новый числитель
+        new_num = self.num * Integer(str(k1)) - other.num * Integer(str(k2))
 
-        L = int(str(Natural(str(b)).lcm(Natural(str(d)))))
+        # Создаем результат и сокращаем
+        result = Rational()
+        result.num = new_num
+        result.den = common_den
 
-        k1 = L // b
-        k2 = L // d
-
-        num = a * k1 - c * k2
-        den = L
-
-        return Rational(str(num), str(den)).red_q_q()
+        return result.red_q_q()
 
     # ================== Q-7: MUL_QQ_Q ==================
 
     def mul_qq_q(self, other: "Rational") -> "Rational":
         """
         Q-7: MUL_QQ_Q
-        Умножение рациональных чисел:
-          (a/b) * (c/d) = (a*c) / (b*d)
-        Результат сокращается через RED_Q_Q.
+        Умножение рациональных чисел.
         """
         if not isinstance(other, Rational):
             raise TypeError("Умножать можно только Rational")
 
-        r1 = self.red_q_q()
-        r2 = other.red_q_q()
+        # Новый числитель и знаменатель
+        new_num = self.num * other.num
+        new_den = self.den * other.den
 
-        a = int(str(r1.num))
-        b = int(str(r1.den))
-        c = int(str(r2.num))
-        d = int(str(r2.den))
-
-        if b == 0 or d == 0:
-            raise ZeroDivisionError("Знаменатель рационального числа не может быть 0")
-
-        num = a * c
-        den = b * d
-
-        if den == 0:
-            raise ZeroDivisionError("Знаменатель рационального числа не может быть 0")
-
-        return Rational(str(num), str(den)).red_q_q()
+        # Создаем результат и сокращаем
+        result = Rational()
+        result.num = new_num
+        result.den = new_den
+        return result.red_q_q()
 
     # ================== Q-8: DIV_QQ_Q ==================
 
     def div_qq_q(self, other: "Rational") -> "Rational":
         """
         Q-8: DIV_QQ_Q
-        Деление рациональных чисел:
-          (a/b) / (c/d) = (a*d) / (b*c), при c != 0.
-        Результат сокращается через RED_Q_Q.
+        Деление рациональных чисел.
         """
         if not isinstance(other, Rational):
             raise TypeError("Делить можно только на Rational")
 
-        r1 = self.red_q_q()
-        r2 = other.red_q_q()
-
-        a = int(str(r1.num))
-        b = int(str(r1.den))
-        c = int(str(r2.num))
-        d = int(str(r2.den))
-
-        if b == 0 or d == 0:
-            raise ZeroDivisionError("Знаменатель рационального числа не может быть 0")
-        if c == 0:
+        if other.num.is_zero():
             raise ZeroDivisionError("Деление на ноль: числитель второго числа равен 0")
 
-        num = a * d
-        den = b * c
+        # "Переворачиваем" вторую дробь и умножаем
+        # Знак числителя второй дроби
+        new_num = self.num * Integer(str(other.den))
+        new_den = self.den * abs(other.num)
 
-        if den == 0:
-            raise ZeroDivisionError("Знаменатель рационального числа не может быть 0")
+        # Учитываем знак числителя второй дроби
+        if other.num.is_negative():
+            new_num = -new_num
 
-        return Rational(str(num), str(den)).red_q_q()
+        # Создаем результат и сокращаем
+        result = Rational()
+        result.num = new_num
+        result.den = new_den
+        return result.red_q_q()
 
     # ========= Дополнительно: операторы для удобства =========
 

@@ -22,7 +22,7 @@ class Polynomial:
             self.coefficients = [Rational("0", "1")]
         else:
             # Убираем ведущие нули
-            while len(coefficients) > 1 and str(coefficients[-1].num) == "0":
+            while len(coefficients) > 1 and coefficients[-1].num.is_zero():
                 coefficients.pop()
             self.coefficients = coefficients if coefficients else [Rational("0", "1")]
     
@@ -30,7 +30,7 @@ class Polynomial:
         """
         Проверяет, является ли многочлен нулевым
         """
-        return len(self.coefficients) == 1 and str(self.coefficients[0].num) == "0"
+        return len(self.coefficients) == 1 and self.coefficients[0].num.is_zero()
     
     @classmethod
     def from_string(cls, poly_str: str):
@@ -126,7 +126,7 @@ class Polynomial:
         
         terms = []
         for i, coeff in enumerate(self.coefficients):
-            if str(coeff.num) != "0":
+            if not coeff.num.is_zero():
                 coeff_str = str(coeff)
                 if i == 0:
                     terms.append(coeff_str)
@@ -171,7 +171,7 @@ class Polynomial:
         for i in range(max_len):
             coeff1 = self.coefficients[i] if i < len(self.coefficients) else Rational("0", "1")
             coeff2 = other.coefficients[i] if i < len(other.coefficients) else Rational("0", "1")
-            result_coeffs.append(coeff1.add_qq_q(coeff2))
+            result_coeffs.append(coeff1 + coeff2)
         
         return Polynomial(result_coeffs)
     
@@ -180,7 +180,7 @@ class Polynomial:
         Сложение многочлена с рациональным числом (свободным членом)
         """
         result_coeffs = self.coefficients[:]
-        result_coeffs[0] = result_coeffs[0].add_qq_q(other)
+        result_coeffs[0] = result_coeffs[0] + other
         return Polynomial(result_coeffs)
     
     # P-2: Вычитание многочленов
@@ -194,7 +194,7 @@ class Polynomial:
         for i in range(max_len):
             coeff1 = self.coefficients[i] if i < len(self.coefficients) else Rational("0", "1")
             coeff2 = other.coefficients[i] if i < len(other.coefficients) else Rational("0", "1")
-            result_coeffs.append(coeff1.sub_qq_q(coeff2))
+            result_coeffs.append(coeff1 - coeff2)
         
         return Polynomial(result_coeffs)
     
@@ -203,7 +203,7 @@ class Polynomial:
         Вычитание рационального числа (свободного члена) из многочлена
         """
         result_coeffs = self.coefficients[:]
-        result_coeffs[0] = result_coeffs[0].sub_qq_q(other)
+        result_coeffs[0] = result_coeffs[0] - other
         return Polynomial(result_coeffs)
     
     # P-3: Умножение многочлена на рациональное число
@@ -213,7 +213,7 @@ class Polynomial:
         """
         result_coeffs = []
         for coeff in self.coefficients:
-            result_coeffs.append(coeff.mul_qq_q(other))
+            result_coeffs.append(coeff * other)
         
         return Polynomial(result_coeffs)
     
@@ -240,50 +240,34 @@ class Polynomial:
         """
         Старший коэффициент многочлена
         """
-        if not self.coefficients or all(str(coeff.num) == "0" for coeff in self.coefficients):
+        if self.is_zero():
             return Rational("0", "1")
-        # Находим последний ненулевой коэффициент
-        for i in range(len(self.coefficients) - 1, -1, -1):
-            if str(self.coefficients[i].num) != "0":
-                return self.coefficients[i]
-        return Rational("0", "1")
+        return self.coefficients[-1]
     
     # P-6: Степень многочлена
     def deg_p_n(self) -> Natural:
         """
         Степень многочлена
         """
-        if not self.coefficients or all(str(coeff.num) == "0" for coeff in self.coefficients):
+        if self.is_zero():
             return Natural("0")
-        
-        # Находим последний ненулевой коэффициент
-        for i in range(len(self.coefficients) - 1, -1, -1):
-            if str(self.coefficients[i].num) != "0":
-                return Natural(str(i))
-        return Natural("0")
+        return Natural(str(len(self.coefficients) - 1))
     
     # P-7: Вынесение из многочлена НОК знаменателей коэффициентов и НОД числителей
     def fac_p_q(self) -> Rational:
         """
         Вынесение из многочлена НОК знаменателей коэффициентов и НОД числителей
         """
-        if not self.coefficients or all(str(coeff.num) == "0" for coeff in self.coefficients):
+        if self.is_zero():
             return Rational("0", "1")
         
-        # Собираем числители и знаменатели
         numerators = []
         denominators = []
         
         for coeff in self.coefficients:
-            if str(coeff.num) != "0":
-                # Преобразуем числитель и знаменатель в целые числа
-                numerator_int = coeff.num  # используем напрямую Integer из Rational
-                denominator_nat = coeff.den  # используем напрямую Natural из Rational
-                
-                # Берем модуль числителя, чтобы получить положительное значение для НОД
-                numerator_abs = numerator_int.abs()
-                numerators.append(numerator_abs.to_natural())
-                denominators.append(denominator_nat)
+            if not coeff.num.is_zero():
+                numerators.append(abs(coeff.num))
+                denominators.append(coeff.den)
         
         if not numerators:
             return Rational("0", "1")
@@ -315,7 +299,7 @@ class Polynomial:
         
         for i, coeff1 in enumerate(self.coefficients):
             for j, coeff2 in enumerate(other.coefficients):
-                result_coeffs[i + j] = result_coeffs[i + j].add_qq_q(coeff1.mul_qq_q(coeff2))
+                result_coeffs[i + j] += coeff1 * coeff2
         
         return Polynomial(result_coeffs)
     
@@ -324,38 +308,31 @@ class Polynomial:
         """
         Частное от деления многочлена на многочлен при делении с остатком
         """
-        if not other.coefficients or str(other.led_p_q().num) == "0":
+        if other.is_zero():
             raise ZeroDivisionError("Деление на нулевой многочлен")
-        
-        # Копируем коэффициенты для делимого
+
         dividend = Polynomial(self.coefficients[:])
-        divisor = Polynomial(other.coefficients[:])
+        divisor = other
+
+        if dividend.deg_p_n() < divisor.deg_p_n():
+            return Polynomial()
+
+        quotient_len = int(str(dividend.deg_p_n() - divisor.deg_p_n())) + 1
+        quotient_coeffs = [Rational("0", "1")] * quotient_len
         
-        # Если степень делимого меньше степени делителя, результат 0
-        if dividend.deg_p_n().__lt__(divisor.deg_p_n()):
-            return Polynomial([Rational("0", "1")])
-        
-        # Создаем результат (частное)
-        quotient_coeffs = [Rational("0", "1")] * (int(str(dividend.deg_p_n())) - int(str(divisor.deg_p_n())) + 1)
-        
-        # Выполняем деление
-        while not dividend.deg_p_n().__lt__(divisor.deg_p_n()) and str(dividend.led_p_q().num) != "0":
-            # Находим степень текущего члена частного
-            power_diff = int(str(dividend.deg_p_n())) - int(str(divisor.deg_p_n()))
-            
-            # Находим коэффициент текущего члена частного
+        lead_divisor = divisor.led_p_q()
+
+        while not dividend.is_zero() and dividend.deg_p_n() >= divisor.deg_p_n():
+            deg_diff = int(str(dividend.deg_p_n() - divisor.deg_p_n()))
             lead_dividend = dividend.led_p_q()
-            lead_divisor = divisor.led_p_q()
-            coeff_quotient = lead_dividend.div_qq_q(lead_divisor)
             
-            # Добавляем коэффициент в частное
-            quotient_coeffs[power_diff] = quotient_coeffs[power_diff].add_qq_q(coeff_quotient)
+            term_coeff = lead_dividend / lead_divisor
+            quotient_coeffs[deg_diff] = term_coeff
             
-            # Создаем многочлен для вычитания
-            subtrahend = divisor.mul_pq_p(coeff_quotient).mul_pxk_p(Natural(str(power_diff)))
+            term_poly = Polynomial([term_coeff]).mul_pxk_p(Natural(str(deg_diff)))
             
-            # Вычитаем из делимого
-            dividend = dividend.sub_pp_p(subtrahend)
+            subtrahend = divisor.mul_pp_p(term_poly)
+            dividend -= subtrahend
         
         return Polynomial(quotient_coeffs)
     
@@ -364,24 +341,11 @@ class Polynomial:
         """
         Остаток от деления многочлена на многочлен при делении с остатком
         """
-        if not other.coefficients or str(other.led_p_q().num) == "0":
+        if other.is_zero():
             raise ZeroDivisionError("Деление на нулевой многочлен")
         
-    # P-10: Остаток от деления многочлена на многочлен при делении с остатком
-    def mod_pp_p(self, other: Polynomial) -> Polynomial:
-        """
-        Остаток от деления многочлена на многочлен при делении с остатком
-        """
-        if not other.coefficients or str(other.led_p_q().num) == "0":
-            raise ZeroDivisionError("Деление на нулевой многочлен")
-        
-        # Вычисляем частное
         quotient = self.div_pp_p(other)
-        
-        # Вычисляем произведение частного и делителя
         product = quotient.mul_pp_p(other)
-        
-        # Вычисляем остаток как разность делимого и произведения
         remainder = self.sub_pp_p(product)
         
         return remainder
@@ -403,14 +367,10 @@ class Polynomial:
         
         # Нормализуем НОД, чтобы получить монический многочлен (старший коэффициент = 1)
         lead_coeff = a.led_p_q()
-        if str(lead_coeff.num) != "0":
-            # Делим все коэффициенты на старший коэффициент, чтобы сделать его равным 1
-            normalized_coeffs = []
-            for coeff in a.coefficients:
-                normalized_coeffs.append(coeff.div_qq_q(lead_coeff))
-            return Polynomial(normalized_coeffs)
+        if not lead_coeff.num.is_zero():
+            return a.mul_pq_p(Rational("1") / lead_coeff)
         else:
-            return Polynomial([Rational("0", "1")])
+            return Polynomial()
     
     # P-12: Производная многочлена
     def der_p_p(self) -> Polynomial:
@@ -426,10 +386,10 @@ class Polynomial:
             # Производная a_i * x^i равна i * a_i * x^(i-1)
             coeff = self.coefficients[i]
             # Умножаем коэффициент на степень
-            degree_rational = Rational(str(i), "1")
-            new_coeff = coeff.mul_qq_q(degree_rational)
+            # Умножаем коэффициент на степень
+            new_coeff = coeff * Rational(str(i))
             result_coeffs.append(new_coeff)
-        
+
         return Polynomial(result_coeffs)
     
     # P-13: Преобразование многочлена — кратные корни в простые
@@ -446,18 +406,46 @@ class Polynomial:
         
         # Если производная - нулевой многочлен (многочлен степени 0 или 1),
         # то у него нет кратных корней, возвращаем исходный многочлен
-        if str(derivative.led_p_q().num) == "0":
+        if derivative.is_zero():
             return Polynomial(self.coefficients[:])
         
         gcd_poly = self.gcf_pp_p(derivative)
-        
-        # Если НОД - нулевой многочлен, возвращаем копию исходного многочлена
-        if str(gcd_poly.led_p_q().num) == "0":
+
+        if gcd_poly.is_zero():
             return Polynomial(self.coefficients[:])
         
-        # Делим многочлен на НОД с его производной
         result = self.div_pp_p(gcd_poly)
         
         return result
     
     
+    def __add__(self, other):
+        if isinstance(other, Polynomial):
+            return self.add_pp_p(other)
+        elif isinstance(other, Rational):
+            return self.add_qq_q(other)
+        return NotImplemented
+
+    def __sub__(self, other):
+        if isinstance(other, Polynomial):
+            return self.sub_pp_p(other)
+        elif isinstance(other, Rational):
+            return self.sub_qq_q(other)
+        return NotImplemented
+
+    def __mul__(self, other):
+        if isinstance(other, Polynomial):
+            return self.mul_pp_p(other)
+        elif isinstance(other, Rational):
+            return self.mul_pq_p(other)
+        return NotImplemented
+
+    def __truediv__(self, other):
+        if isinstance(other, Polynomial):
+            return self.div_pp_p(other)
+        return NotImplemented
+    
+    def __mod__(self, other):
+        if isinstance(other, Polynomial):
+            return self.mod_pp_p(other)
+        return NotImplemented
