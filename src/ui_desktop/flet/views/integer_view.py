@@ -1,120 +1,30 @@
 import flet as ft
 from ui_desktop.flet.views.integer.methods.abs import IntegerAbsView
 
-def IntegerView():
-    """Основное представление для целых чисел с выбором метода"""
-    return ft.View(
-        "/integer",
-        [
-            ft.AppBar(title=ft.Text("Целые числа"), bgcolor=ft.Colors.BROWN_400),
+class IntegerView(ft.View):
+    def __init__(self):
+        super().__init__()
+        self.route = "/integer"
+        self.appbar = ft.AppBar(title=ft.Text("Целые числа"), bgcolor=ft.Colors.BROWN_400)
+        self.controls = [
             ft.Column(
                 [
                     ft.Text("Выберите метод:", size=20),
                     ft.GridView(
                         controls=[
-                            ft.Container(
-                                content=ft.Text("Абсолютная величина (ABS_Z_N)", text_align=ft.TextAlign.CENTER),
-                                width=150,
-                                height=70,
-                                bgcolor=ft.Colors.BROWN_300,
-                                border_radius=5,
-                                padding=5,
-                                ink=True,
-                                on_click=lambda e: e.page.go("/integer/abs"),
-                            ),
-                           ft.Container(
-                               content=ft.Text("Определение знака (SGN_Z_D)", text_align=ft.TextAlign.CENTER),
-                               width=150,
-                               height=70,
-                               bgcolor=ft.Colors.BROWN_300,
-                               border_radius=5,
-                               padding=5,
-                               ink=True,
-                               on_click=lambda e: e.page.go("/integer/sgn"),
-                           ),
-                           ft.Container(
-                              content=ft.Text("Умножение на -1(MUL_ZM_Z)", text_align=ft.TextAlign.CENTER),
-                              width=150,
-                              height=70,
-                              bgcolor=ft.Colors.BROWN_300,
-                              border_radius=5,
-                              padding=5,
-                              ink=True,
-                              on_click=lambda e: e.page.go("/integer/mul_by_minus_one"),
-                          ),
-                          ft.Container(
-                              content=ft.Text("Из натурального в целое (TRANS_N_Z)", text_align=ft.TextAlign.CENTER),
-                              width=150,
-                              height=70,
-                              bgcolor=ft.Colors.BROWN_300,
-                              border_radius=5,
-                              padding=5,
-                              ink=True,
-                              on_click=lambda e: e.page.go("/integer/from_natural"),
-                          ),
-                          ft.Container(
-                              content=ft.Text("В натуральное (TRANS_Z_N)", text_align=ft.TextAlign.CENTER),
-                              width=150,
-                              height=70,
-                              bgcolor=ft.Colors.BROWN_300,
-                              border_radius=5,
-                              padding=5,
-                              ink=True,
-                              on_click=lambda e: e.page.go("/integer/to_natural"),
-                          ),
-                          ft.Container(
-                              content=ft.Text("Сложение (ADD_ZZ_Z)", text_align=ft.TextAlign.CENTER),
-                              width=150,
-                              height=70,
-                              bgcolor=ft.Colors.BROWN_300,
-                              border_radius=5,
-                              padding=5,
-                              ink=True,
-                              on_click=lambda e: e.page.go("/integer/addition"),
-                          ),
-                          ft.Container(
-                              content=ft.Text("Вычитание (SUB_ZZ_Z)", text_align=ft.TextAlign.CENTER),
-                              width=150,
-                              height=70,
-                              bgcolor=ft.Colors.BROWN_300,
-                              border_radius=5,
-                              padding=5,
-                              ink=True,
-                              on_click=lambda e: e.page.go("/integer/subtraction"),
-                          ),
-                          ft.Container(
-                              content=ft.Text("Умножение (MUL_ZZ_Z)", text_align=ft.TextAlign.CENTER),
-                              width=150,
-                              height=70,
-                              bgcolor=ft.Colors.BROWN_300,
-                              border_radius=5,
-                              padding=5,
-                              ink=True,
-                              on_click=lambda e: e.page.go("/integer/multiplication"),
-                          ),
-                          ft.Container(
-                              content=ft.Text("Частное (DIV_ZZ_Z)", text_align=ft.TextAlign.CENTER),
-                              width=150,
-                              height=70,
-                              bgcolor=ft.Colors.BROWN_300,
-                              border_radius=5,
-                              padding=5,
-                              ink=True,
-                              on_click=lambda e: e.page.go("/integer/truncated_division"),
-                          ),
-                          ft.Container(
-                              content=ft.Text("Остаток (MOD_ZZ_Z)", text_align=ft.TextAlign.CENTER),
-                              width=150,
-                              height=70,
-                              bgcolor=ft.Colors.BROWN_300,
-                              border_radius=5,
-                              padding=5,
-                              ink=True,
-                              on_click=lambda e: e.page.go("/integer/modulo"),
-                          ),
-                      ],
-                      run_spacing=5,
-                      spacing=5,
+                            self.create_button("Абсолютная величина (ABS_Z_N)", "/integer/abs"),
+                            self.create_button("Определение знака (SGN_Z_D)", "/integer/sgn"),
+                            self.create_button("Умножение на -1(MUL_ZM_Z)", "/integer/mul_by_minus_one"),
+                            self.create_button("Из натурального в целое (TRANS_N_Z)", "/integer/from_natural"),
+                            self.create_button("В натуральное (TRANS_Z_N)", "/integer/to_natural"),
+                            self.create_button("Сложение (ADD_ZZ_Z)", "/integer/addition"),
+                            self.create_button("Вычитание (SUB_ZZ_Z)", "/integer/subtraction"),
+                            self.create_button("Умножение (MUL_ZZ_Z)", "/integer/multiplication"),
+                            self.create_button("Частное (DIV_ZZ_Z)", "/integer/truncated_division"),
+                            self.create_button("Остаток (MOD_ZZ_Z)", "/integer/modulo"),
+                        ],
+                        run_spacing=5,
+                        spacing=5,
                         expand=True,
                         max_extent=160,
                     ),
@@ -124,7 +34,18 @@ def IntegerView():
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 expand=True,
             )
-        ],
-        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-        vertical_alignment=ft.MainAxisAlignment.CENTER,
-    )
+        ]
+        self.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+        self.vertical_alignment = ft.MainAxisAlignment.CENTER
+
+    def create_button(self, text, route):
+        return ft.Container(
+            content=ft.Text(text, text_align=ft.TextAlign.CENTER),
+            width=150,
+            height=70,
+            bgcolor=ft.Colors.BROWN_300,
+            border_radius=5,
+            padding=5,
+            ink=True,
+            on_click=lambda e: e.page.go(route),
+        )

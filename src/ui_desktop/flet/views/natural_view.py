@@ -14,163 +14,36 @@ from ui_desktop.flet.views.natural.methods.gcd import NaturalGCDView
 from ui_desktop.flet.views.natural.methods.division import NaturalDivisionView
 from ui_desktop.flet.views.natural.methods.modulo import NaturalModuloView
 
-def NaturalView():
-    """Основное представление для натуральных чисел с выбором метода"""
-    return ft.View(
-        "/natural",
-        [
-            ft.AppBar(title=ft.Text("Натуральные числа"), bgcolor=ft.Colors.BROWN_400),
+class NaturalView(ft.View):
+    def __init__(self):
+        super().__init__()
+        self.route = "/natural"
+        self.appbar = ft.AppBar(title=ft.Text("Натуральные числа"), bgcolor=ft.Colors.BROWN_400)
+        self.controls = [
             ft.Column(
                 [
                     ft.Text("Выберите метод:", size=20),
                     ft.GridView(
                         controls=[
-                            ft.Container(
-                                content=ft.Text("Сравнение (COM_NN_D)", text_align=ft.TextAlign.CENTER),
-                                width=150,
-                                height=70,
-                                bgcolor=ft.Colors.BROWN_300,
-                                border_radius=5,
-                                padding=5,
-                                ink=True, # Включает эффект нажатия
-                                on_click=lambda e: e.page.go("/natural/comparison"),
-                            ),
-                            ft.Container(
-                                content=ft.Text("Сложение (ADD_NN_N)", text_align=ft.TextAlign.CENTER),
-                                width=150,
-                                height=70,
-                                bgcolor=ft.Colors.BROWN_300,
-                                border_radius=5,
-                                padding=5,
-                                ink=True,
-                                on_click=lambda e: e.page.go("/natural/addition"),
-                            ),
-                            ft.Container(
-                                content=ft.Text("Проверка на ноль (NZER_N_B)", text_align=ft.TextAlign.CENTER),
-                                width=150,
-                                height=70,
-                                bgcolor=ft.Colors.BROWN_300,
-                                border_radius=5,
-                                padding=5,
-                                ink=True,
-                                on_click=lambda e: e.page.go("/natural/zero_check"),
-                            ),
-                            ft.Container(
-                                content=ft.Text("Добавить 1(ADD_1N_N)", text_align=ft.TextAlign.CENTER),
-                                width=150,
-                                height=70,
-                                bgcolor=ft.Colors.BROWN_300,
-                                border_radius=5,
-                                padding=5,
-                                ink=True,
-                                on_click=lambda e: e.page.go("/natural/add_one"),
-                            ),
-                            ft.Container(
-                                content=ft.Text("Вычитание (SUB_NN_N)", text_align=ft.TextAlign.CENTER),
-                                width=150,
-                                height=70,
-                                bgcolor=ft.Colors.BROWN_300,
-                                border_radius=5,
-                                padding=5,
-                                ink=True,
-                                on_click=lambda e: e.page.go("/natural/subtraction"),
-                            ),
-                            ft.Container(
-                                content=ft.Text("Умножение на цифру (MUL_ND_N)", text_align=ft.TextAlign.CENTER),
-                                width=150,
-                                height=70,
-                                bgcolor=ft.Colors.BROWN_300,
-                                border_radius=5,
-                                padding=5,
-                                ink=True,
-                                on_click=lambda e: e.page.go("/natural/multiplication_by_digit"),
-                            ),
-                            ft.Container(
-                                content=ft.Text("Умножение на 10^k (MUL_Nk_N)", text_align=ft.TextAlign.CENTER),
-                                width=150,
-                                height=70,
-                                bgcolor=ft.Colors.BROWN_300,
-                                border_radius=5,
-                                padding=5,
-                                ink=True,
-                                on_click=lambda e: e.page.go("/natural/multiplication_by_10k"),
-                            ),
-                            ft.Container(
-                                content=ft.Text("Умножение (MUL_NN_N)", text_align=ft.TextAlign.CENTER),
-                                width=150,
-                                height=70,
-                                bgcolor=ft.Colors.BROWN_300,
-                                border_radius=5,
-                                padding=5,
-                                ink=True,
-                                on_click=lambda e: e.page.go("/natural/multiplication"),
-                            ),
-                            ft.Container(
-                                content=ft.Text("Вычитание с умножением на цифру (SUB_NDN_N)", text_align=ft.TextAlign.CENTER),
-                                width=150,
-                                height=70,
-                                bgcolor=ft.Colors.BROWN_300,
-                                border_radius=5,
-                                padding=5,
-                                ink=True,
-                                on_click=lambda e: e.page.go("/natural/subtraction_mul_digit"),
-                            ),
-                            ft.Container(
-                                content=ft.Text("Первая цифра деления * 10^k (DIV_NN_Dk)", text_align=ft.TextAlign.CENTER),
-                                width=150,
-                                height=70,
-                                bgcolor=ft.Colors.BROWN_300,
-                                border_radius=5,
-                                padding=5,
-                                ink=True,
-                                on_click=lambda e: e.page.go("/natural/div_first_digit"),
-                            ),
-                            ft.Container(
-                                content=ft.Text("НОК (LCM_NN_N)", text_align=ft.TextAlign.CENTER),
-                                width=150,
-                                height=70,
-                                bgcolor=ft.Colors.BROWN_300,
-                                border_radius=5,
-                                padding=5,
-                                ink=True,
-                                on_click=lambda e: e.page.go("/natural/lcm"),
-                            ),
-                            ft.Container(
-                                content=ft.Text("НОД (GCD_NN_N)", text_align=ft.TextAlign.CENTER),
-                                width=150,
-                                height=70,
-                                bgcolor=ft.Colors.BROWN_300,
-                                border_radius=5,
-                                padding=5,
-                                ink=True,
-                                on_click=lambda e: e.page.go("/natural/gcd"),
-                            ),
-                            # Здесь можно добавить Container для других методов
-                            ft.Container(
-                                content=ft.Text("Неполное частное (DIV_NN_N)", text_align=ft.TextAlign.CENTER),
-                                width=150,
-                                height=70,
-                                bgcolor=ft.Colors.BROWN_300,
-                                border_radius=5,
-                                padding=5,
-                                ink=True,
-                                on_click=lambda e: e.page.go("/natural/division"),
-                            ),
-                            ft.Container(
-                                content=ft.Text("Остаток от деления (MOD_NN_N)", text_align=ft.TextAlign.CENTER),
-                                width=150,
-                                height=70,
-                                bgcolor=ft.Colors.BROWN_300,
-                                border_radius=5,
-                                padding=5,
-                                ink=True,
-                                on_click=lambda e: e.page.go("/natural/modulo"),
-                            ),
+                            self.create_button("Сравнение (COM_NN_D)", "/natural/comparison"),
+                            self.create_button("Сложение (ADD_NN_N)", "/natural/addition"),
+                            self.create_button("Проверка на ноль (NZER_N_B)", "/natural/zero_check"),
+                            self.create_button("Добавить 1(ADD_1N_N)", "/natural/add_one"),
+                            self.create_button("Вычитание (SUB_NN_N)", "/natural/subtraction"),
+                            self.create_button("Умножение на цифру (MUL_ND_N)", "/natural/multiplication_by_digit"),
+                            self.create_button("Умножение на 10^k (MUL_Nk_N)", "/natural/multiplication_by_10k"),
+                            self.create_button("Умножение (MUL_NN_N)", "/natural/multiplication"),
+                            self.create_button("Вычитание с умножением на цифру (SUB_NDN_N)", "/natural/subtraction_mul_digit"),
+                            self.create_button("Первая цифра деления * 10^k (DIV_NN_Dk)", "/natural/div_first_digit"),
+                            self.create_button("НОК (LCM_NN_N)", "/natural/lcm"),
+                            self.create_button("НОД (GCD_NN_N)", "/natural/gcd"),
+                            self.create_button("Неполное частное (DIV_NN_N)", "/natural/division"),
+                            self.create_button("Остаток от деления (MOD_NN_N)", "/natural/modulo"),
                         ],
-                        run_spacing=5, # Уменьшено расстояние между строками/колонками
-                        spacing=5,    # Уменьшено расстояние между элементами
+                        run_spacing=5,
+                        spacing=5,
                         expand=True,
-                        max_extent=160, # Уменьшена максимальная ширина элемента
+                        max_extent=160,
                     ),
                     ft.ElevatedButton("Назад", on_click=lambda e: e.page.go("/")),
                 ],
@@ -178,7 +51,18 @@ def NaturalView():
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 expand=True,
             )
-        ],
-        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-        vertical_alignment=ft.MainAxisAlignment.CENTER,
-    )
+        ]
+        self.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+        self.vertical_alignment = ft.MainAxisAlignment.CENTER
+
+    def create_button(self, text, route):
+        return ft.Container(
+            content=ft.Text(text, text_align=ft.TextAlign.CENTER),
+            width=150,
+            height=70,
+            bgcolor=ft.Colors.BROWN_300,
+            border_radius=5,
+            padding=5,
+            ink=True,
+            on_click=lambda e: e.page.go(route),
+        )

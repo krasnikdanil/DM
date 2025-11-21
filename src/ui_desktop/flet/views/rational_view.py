@@ -4,7 +4,7 @@ class RationalView(ft.View):
     def __init__(self):
         super().__init__()
         self.route = "/rational"
-        self.appbar = ft.AppBar(title=ft.Text("Рациональные числа"), bgcolor=ft.Colors.BROWN_700)
+        self.appbar = ft.AppBar(title=ft.Text("Рациональные числа"), bgcolor=ft.Colors.BROWN_400)
         self.controls = [
             ft.Column(
                 [
@@ -40,7 +40,7 @@ class RationalView(ft.View):
             content=ft.Text(text, text_align=ft.TextAlign.CENTER),
             width=180,
             height=80,
-            bgcolor=ft.Colors.BROWN_400,
+            bgcolor=ft.Colors.BROWN_300,
             border_radius=5,
             padding=10,
             ink=True,

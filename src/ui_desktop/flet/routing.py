@@ -3,10 +3,8 @@ from ui_desktop.flet.views import (
     IntegerView,
     RationalView,
     PolynomialView,
+    NaturalView
 )
-
-# Импортируем NaturalView отдельно
-from ui_desktop.flet.views.natural_view import NaturalView
 from ui_desktop.flet.views.natural.methods.comparison import NaturalComparisonView
 from ui_desktop.flet.views.natural.methods.addition import NaturalAdditionView
 from ui_desktop.flet.views.natural.methods.zero_check import NaturalZeroCheckView
@@ -39,6 +37,21 @@ from ui_desktop.flet.views.rational.methods.division import RationalDivisionView
 from ui_desktop.flet.views.rational.methods.is_integer import RationalIsIntegerView
 from ui_desktop.flet.views.rational.methods.trans_z_q import RationalTransZQView
 from ui_desktop.flet.views.rational.methods.trans_q_z import RationalTransQZView
+from ui_desktop.flet.views.polynomial.methods.add_pp_p import PolynomialAddPPView
+from ui_desktop.flet.views.polynomial.methods.add_pq_p import PolynomialAddPQView
+from ui_desktop.flet.views.polynomial.methods.sub_pp_p import PolynomialSubPPView
+from ui_desktop.flet.views.polynomial.methods.sub_pq_p import PolynomialSubPQView
+from ui_desktop.flet.views.polynomial.methods.mul_pq_p import PolynomialMulPQView
+from ui_desktop.flet.views.polynomial.methods.mul_pxk_p import PolynomialMulPXKView
+from ui_desktop.flet.views.polynomial.methods.mul_pp_p import PolynomialMulPPView
+from ui_desktop.flet.views.polynomial.methods.led_p_q import PolynomialLedPQView
+from ui_desktop.flet.views.polynomial.methods.deg_p_n import PolynomialDegPNView
+from ui_desktop.flet.views.polynomial.methods.fac_p_q import PolynomialFacPQView
+from ui_desktop.flet.views.polynomial.methods.div_pp_p import PolynomialDivPPView
+from ui_desktop.flet.views.polynomial.methods.mod_pp_p import PolynomialModPPView
+from ui_desktop.flet.views.polynomial.methods.gcf_pp_p import PolynomialGcfPPView
+from ui_desktop.flet.views.polynomial.methods.der_p_p import PolynomialDerPPView
+from ui_desktop.flet.views.polynomial.methods.nmr_p_p import PolynomialNmrPPView
 
 
 # Словарь соответствия маршрутов и представлений
@@ -60,7 +73,7 @@ ROUTE_MAP = {
     "/natural/gcd": lambda: NaturalGCDView(),
     "/integer": lambda: IntegerView(),
     "/rational": lambda: RationalView(),
-    "/polynomial": lambda: PolynomialView(),
+    "/polynomial": lambda: PolynomialView(), # Instantiate the class
     "/integer/abs": lambda: IntegerAbsView(),
     "/integer/sgn": lambda: IntegerSgnView(),
     "/integer/mul_by_minus_one": lambda: IntegerMulByMinusOneView(),
@@ -79,6 +92,21 @@ ROUTE_MAP = {
     "/rational/is_integer": lambda: RationalIsIntegerView(),
     "/rational/trans_z_q": lambda: RationalTransZQView(),
     "/rational/trans_q_z": lambda: RationalTransQZView(),
+    "/polynomial/add_pp_p": lambda: PolynomialAddPPView(),
+    "/polynomial/add_pq_p": lambda: PolynomialAddPQView(),
+    "/polynomial/sub_pp_p": lambda: PolynomialSubPPView(),
+    "/polynomial/sub_pq_p": lambda: PolynomialSubPQView(),
+    "/polynomial/mul_pq_p": lambda: PolynomialMulPQView(),
+    "/polynomial/mul_pxk_p": lambda: PolynomialMulPXKView(),
+    "/polynomial/led_p_q": lambda: PolynomialLedPQView(),
+    "/polynomial/deg_p_n": lambda: PolynomialDegPNView(),
+    "/polynomial/fac_p_q": lambda: PolynomialFacPQView(),
+    "/polynomial/mul_pp_p": lambda: PolynomialMulPPView(),
+    "/polynomial/div_pp_p": lambda: PolynomialDivPPView(),
+    "/polynomial/mod_pp_p": lambda: PolynomialModPPView(),
+    "/polynomial/gcf_pp_p": lambda: PolynomialGcfPPView(),
+    "/polynomial/der_p_p": lambda: PolynomialDerPPView(),
+    "/polynomial/nmr_p_p": lambda: PolynomialNmrPPView(),
 }
 
 def handle_route_change(e: ft.RouteChangeEvent, page: ft.Page):

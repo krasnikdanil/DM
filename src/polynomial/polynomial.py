@@ -1,7 +1,8 @@
 from typing import List
-from src.rational.rational import Rational
-from src.integer.integer import Integer
-from src.natural.natural import Natural
+import re
+from rational.rational import Rational
+from integer.integer import Integer
+from natural.natural import Natural
 
 
 class Polynomial:
@@ -21,6 +22,8 @@ class Polynomial:
         if coefficients is None:
             self.coefficients = [Rational("0", "1")]
         else:
+            # Создаём копию, чтобы не изменять исходный список
+            coefficients = coefficients[:]
             # Убираем ведущие нули
             while len(coefficients) > 1 and coefficients[-1].num.is_zero():
                 coefficients.pop()
@@ -67,7 +70,7 @@ class Polynomial:
             if char in ['+', '-'] and i != 0:
                 if current_term:
                     terms.append(current_term)
-                current_term = char
+                current_term = char if char == '-' else ''
             else:
                 current_term += char
         if current_term:
@@ -78,6 +81,12 @@ class Polynomial:
         
         for term in terms:
             # Обработка каждого члена
+            # Нормализуем: 2x^3 -> 2*x^3, 2x -> 2*x
+            # Добавляем * между числом и x (если его нет)
+            term = re.sub(r'(\d)x', r'\1*x', term)
+            # Добавляем * между дробью и x
+            term = re.sub(r'(\d)/(\d+)x', r'\1/\2*x', term)
+            
             if '*x^' in term:
                 coeff_str, power_str = term.split('*x^')
                 power = int(power_str)
@@ -85,6 +94,17 @@ class Polynomial:
                     coeff_str = '1'
                 elif coeff_str == '-':
                     coeff_str = '-1'
+                coeff = _parse_rational(coeff_str)
+                coeffs[power] = coeff
+            elif term.startswith('x^') or term.startswith('-x^'):
+                # Обработка x^n без коэффициента (например, x^2 или -x^2)
+                if term.startswith('-'):
+                    coeff_str = '-1'
+                    power_str = term[3:]  # убираем '-x^'
+                else:
+                    coeff_str = '1'
+                    power_str = term[2:]  # убираем 'x^'
+                power = int(power_str)
                 coeff = _parse_rational(coeff_str)
                 coeffs[power] = coeff
             elif term.endswith('*x'):
@@ -101,8 +121,9 @@ class Polynomial:
                 coeffs[1] = _parse_rational("-1")
             else:
                 # Свободный член
-                coeff = _parse_rational(term)
-                coeffs[0] = coeff
+                if term and term not in ['+', '-', '']:  # Проверяем, что строка не пустая
+                    coeff = _parse_rational(term)
+                    coeffs[0] = coeff
         
         # Находим максимальную степень
         max_degree = max(coeffs.keys()) if coeffs else 0
@@ -119,41 +140,61 @@ class Polynomial:
     
     def __str__(self) -> str:
         """
-        Строковое представление многочлена
+        Строковое представление многочлена (от старшей степени к младшей)
         """
         if not self.coefficients:
             return "0"
         
         terms = []
-        for i, coeff in enumerate(self.coefficients):
+        # Идём от старшей степени (конец списка) к младшей (начало списка)
+        for i in range(len(self.coefficients) - 1, -1, -1):
+            coeff = self.coefficients[i]
             if not coeff.num.is_zero():
                 coeff_str = str(coeff)
                 if i == 0:
-                    terms.append(coeff_str)
+                    # Свободный член
+                    is_negative = coeff_str.startswith('-')
+                    abs_coeff = coeff_str[1:] if is_negative else coeff_str
+                    terms.append((abs_coeff, is_negative))
                 elif i == 1:
+                    # x в первой степени
                     if coeff_str == "1":
-                        terms.append("x")
+                        terms.append(("x", False))
                     elif coeff_str == "-1":
-                        terms.append("-x")
+                        terms.append(("x", True))
                     else:
-                        terms.append(f"{coeff_str}*x")
+                        is_negative = coeff_str.startswith('-')
+                        abs_coeff = coeff_str[1:] if is_negative else coeff_str
+                        terms.append((f"{abs_coeff}*x", is_negative))
                 else:
+                    # x в степени > 1
                     if coeff_str == "1":
-                        terms.append(f"x^{i}")
+                        terms.append((f"x^{i}", False))
                     elif coeff_str == "-1":
-                        terms.append(f"-x^{i}")
+                        terms.append((f"x^{i}", True))
                     else:
-                        terms.append(f"{coeff_str}*x^{i}")
+                        is_negative = coeff_str.startswith('-')
+                        abs_coeff = coeff_str[1:] if is_negative else coeff_str
+                        terms.append((f"{abs_coeff}*x^{i}", is_negative))
         
         if not terms:
             return "0"
         
-        result = terms[0]
-        for term in terms[1:]:
-            if term.startswith('-'):
-                result += f" - {term[1:]}"
+        # Формируем строку
+        result = ""
+        for idx, (term, is_negative) in enumerate(terms):
+            if idx == 0:
+                # Первый член
+                if is_negative:
+                    result = f"-{term}"
+                else:
+                    result = term
             else:
-                result += f" + {term}"
+                # Последующие члены
+                if is_negative:
+                    result += f" - {term}"
+                else:
+                    result += f" + {term}"
         
         return result
     
@@ -175,7 +216,7 @@ class Polynomial:
         
         return Polynomial(result_coeffs)
     
-    def add_qq_q(self, other: Rational) -> Polynomial:
+    def add_pq_p(self, other: Rational) -> Polynomial:
         """
         Сложение многочлена с рациональным числом (свободным членом)
         """
@@ -198,7 +239,7 @@ class Polynomial:
         
         return Polynomial(result_coeffs)
     
-    def sub_qq_q(self, other: Rational) -> Polynomial:
+    def sub_pq_p(self, other: Rational) -> Polynomial:
         """
         Вычитание рационального числа (свободного члена) из многочлена
         """
@@ -317,7 +358,10 @@ class Polynomial:
         if dividend.deg_p_n() < divisor.deg_p_n():
             return Polynomial()
 
-        quotient_len = int(str(dividend.deg_p_n() - divisor.deg_p_n())) + 1
+        # Правильное вычисление разности степеней
+        deg_dividend = dividend.deg_p_n()
+        deg_divisor = divisor.deg_p_n()
+        quotient_len = int(str(deg_dividend - deg_divisor)) + 1
         quotient_coeffs = [Rational("0", "1")] * quotient_len
         
         lead_divisor = divisor.led_p_q()
@@ -368,7 +412,11 @@ class Polynomial:
         # Нормализуем НОД, чтобы получить монический многочлен (старший коэффициент = 1)
         lead_coeff = a.led_p_q()
         if not lead_coeff.num.is_zero():
-            return a.mul_pq_p(Rational("1") / lead_coeff)
+            # Создаём обратное рациональное число правильно
+            inverse = Rational(str(lead_coeff.den), str(abs(lead_coeff.num)))
+            if lead_coeff.num.is_negative():
+                inverse.num = -inverse.num
+            return a.mul_pq_p(inverse)
         else:
             return Polynomial()
     
@@ -386,8 +434,7 @@ class Polynomial:
             # Производная a_i * x^i равна i * a_i * x^(i-1)
             coeff = self.coefficients[i]
             # Умножаем коэффициент на степень
-            # Умножаем коэффициент на степень
-            new_coeff = coeff * Rational(str(i))
+            new_coeff = coeff * Rational(str(i), "1")
             result_coeffs.append(new_coeff)
 
         return Polynomial(result_coeffs)
@@ -423,14 +470,14 @@ class Polynomial:
         if isinstance(other, Polynomial):
             return self.add_pp_p(other)
         elif isinstance(other, Rational):
-            return self.add_qq_q(other)
+            return self.add_pq_p(other)
         return NotImplemented
 
     def __sub__(self, other):
         if isinstance(other, Polynomial):
             return self.sub_pp_p(other)
         elif isinstance(other, Rational):
-            return self.sub_qq_q(other)
+            return self.sub_pq_p(other)
         return NotImplemented
 
     def __mul__(self, other):
@@ -449,3 +496,22 @@ class Polynomial:
         if isinstance(other, Polynomial):
             return self.mod_pp_p(other)
         return NotImplemented
+    
+    def __eq__(self, other) -> bool:
+        """Проверка равенства многочленов"""
+        if not isinstance(other, Polynomial):
+            return NotImplemented
+        if len(self.coefficients) != len(other.coefficients):
+            return False
+        for c1, c2 in zip(self.coefficients, other.coefficients):
+            # Сравниваем рациональные коэффициенты через сокращение
+            if str(c1.red_q_q()) != str(c2.red_q_q()):
+                return False
+        return True
+    
+    def __ne__(self, other) -> bool:
+        """Проверка неравенства многочленов"""
+        result = self.__eq__(other)
+        if result is NotImplemented:
+            return result
+        return not result
