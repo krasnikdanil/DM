@@ -1,3 +1,4 @@
+""" Выполнял Красник Даниил 4384 """
 from natural.natural import Natural
 
 class Integer(Natural):

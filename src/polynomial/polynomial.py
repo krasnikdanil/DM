@@ -1,3 +1,4 @@
+""" Выполнял Бабуев Бато 4381 """
 from typing import List
 import re
 from rational.rational import Rational

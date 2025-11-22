@@ -1,3 +1,4 @@
+""" Выполнял Зацепин Тимофей 4384 """
 class Natural:
 
     values: list[int]

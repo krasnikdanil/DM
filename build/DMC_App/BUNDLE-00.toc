@@ -1,0 +1,3 @@
+([('DMC_App',
+   '/Users/admin/programming/decstop/DMC/dist/DMC_App',
+   'EXECUTABLE')],)

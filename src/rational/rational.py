@@ -1,3 +1,4 @@
+""" Выполнял Кушнаренко Фёдор 4384 """
 from natural.natural import Natural
 from integer.integer import Integer
 
