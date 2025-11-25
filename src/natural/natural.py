@@ -153,7 +153,7 @@ class Natural:
         return total_res
 
     """ Деление Natural на Natural """
-    def __floordiv__(self, other: 'Natural') -> 'Natural':
+    def __floordiv__(self, other: Natural) -> Natural:
         if not isinstance(other, Natural):
             raise ValueError("Деление поддерживается только для натуральных чисел")
         if other.values == [0]:
@@ -193,7 +193,7 @@ class Natural:
 
         return res
              
-    def __mod__(self, other: 'Natural') -> 'Natural':
+    def __mod__(self, other: Natural) -> Natural:
         if not isinstance(other, Natural):
             raise ValueError("Деление поддерживается только для натуральных чисел")
         if other.values == [0]:
