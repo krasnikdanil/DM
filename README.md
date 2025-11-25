@@ -138,7 +138,7 @@
 3. **Активировать виртуальное окружение**
 
    ```bash
-   venv\Scripts ctivate
+   source venv/bin/activate.* #зависит чем вы пользуетесь fish, zsh, bash
    ```
 
 4. **Установить зависимости**
@@ -150,28 +150,11 @@
 5. **Запустить основной модуль**
 
    ```bash
-   python main.py
+   python src/ui_desktop/flet/main.py
    ```
 
    > Конкретное поведение `main.py` (режимы работы, доступные команды) зависит от реализации
    > и может быть дополнительно описано в документации в каталоге `docs/`.
-
-6. **(Опционально) Запуск тестов**
-
-   При установленном `pytest`:
-
-   ```bash
-   pytest
-   ```
-
-   или для запуска только отдельных тестовых файлов:
-
-   ```bash
-   pytest test_rational_input.py
-   pytest test_rational_red.py
-   pytest test_rational_sub.py
-   ```
-
 ---
 
 ## Примечания
