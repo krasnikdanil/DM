@@ -35,7 +35,6 @@ class Rational:
         """
         self.num = Integer(num)
         self.den = Natural(den)
-
         # Natural у вас допускает "0", поэтому явно запрещаем
         if str(self.den) == "0":
             raise ZeroDivisionError("Знаменатель рационального числа не может быть 0")
