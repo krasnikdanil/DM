@@ -165,9 +165,7 @@ class Natural:
             return Natural("1")
 
         # Предвычисляем multiples: other * d для d от 1 до 9
-        multiples = {}
-        for d in range(1, 10):
-            multiples[d] = other * Natural(str(d))
+        multiples = {d: other * Natural(str(d)) for d in range(1, 10)}
 
         res = Natural("0")
         cur = Natural("0")
@@ -195,41 +193,35 @@ class Natural:
 
         return res
              
-    def __mod__(self, other: Natural) -> Natural:
+    def __mod__(self, other: 'Natural') -> 'Natural':
         if not isinstance(other, Natural):
             raise ValueError("Деление поддерживается только для натуральных чисел")
         if other.values == [0]:
             raise ZeroDivisionError("Деление на ноль")
-        
+
         if self < other:
             return self
-        
-        # res = Natural("0") # Результат деления, здесь не нужен
-        cur = Natural("0")
-        
-        # Перебираем цифры делимого с старших разрядов
+
+        # Предвычисляем other * d для d от 1 до 9
+        multiples = {d: other * Natural(str(d)) for d in range(1, 10)}
+
+        cur = Natural("0")  # Текущий остаток при делении
+
+        # Обрабатываем цифры делимого справа налево (старшие разряды первыми)
         for i in range(len(self.values) - 1, -1, -1):
-            # Сдвигаем текущее делимое влево и добавляем новую цифру
-            cur = cur * Natural(str(10))
-            cur = cur + Natural(str(self.values[i]))
-            
-            # Если текущее делимое меньше делителя, то в результате 0
+            digit = self.values[i]
+            cur = cur * Natural("10") + Natural(str(digit))  # "Опускаем" цифру
+
             if cur >= other:
-                # Подбираем цифру для частного (от 1 до 9)
-                # используя бинарный поиск
-                l, r = 1, 10
-                while r - l > 1:
-                    m = (l + r) // 2
-                    # Если m * other > cur, то цифра m слишком большая
-                    if other * Natural(str(m)) > cur:
-                        r = m
-                    else:
-                        l = m
-                
-                # Вычитаем найденное произведение из текущего делимого
-                cur = cur - (other * Natural(str(l)))
-                
-        return cur
+                # Подбираем максимальную цифру d (9 до 1), чтобы multiples[d] <= cur
+                chosen_d = 0
+                for d in range(9, 0, -1):
+                    if multiples[d] <= cur:
+                        chosen_d = d
+                        break
+                cur = cur - multiples[chosen_d]  # Вычитаем из остатка
+
+        return cur  # Остаток от деления
     
     """ Сравнение натуральных чисел: 
     2 - если первое больше второго,
